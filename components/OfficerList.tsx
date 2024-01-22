@@ -22,7 +22,7 @@ export default function OfficerList() {
   const getOfficers = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.48.185:8080/officer/all_officer',
+        'http://192.168.0.107:8080/officer/all_officer',
       );
       const jsonResponse = response.data;
 
@@ -70,8 +70,12 @@ export default function OfficerList() {
     getOfficers();
   };
 
+  const navigateToDetails = officer => {
+    navigation.navigate('OfficerDetails', {officer});
+  };
+
   return (
-    <View style={{flex: 1, padding: 24}}>
+    <View style={styles.container}>
       <View style={styles.headerContainer}>
         <TextInput
           style={styles.searchInput}
@@ -101,12 +105,19 @@ export default function OfficerList() {
           <Text style={styles.headingText}>Officer List</Text>
           <ScrollView style={styles.container} scrollEnabled={false}>
             {data.filter(filterOfficers).map(({id, name, address, image}) => (
-              <View key={id} style={styles.userCard}>
-                {renderUserImage(image)}
-                <View>
-                  <Text style={styles.userName}>{name}</Text>
-                  <Text style={styles.userStatus}>{address}</Text>
+              <View key={id} style={styles.listContainer}>
+                <View style={styles.userCard}>
+                  {renderUserImage(image)}
+                  <View>
+                    <Text style={styles.userName}>{name}</Text>
+                    <Text style={styles.userStatus}>{address}</Text>
+                  </View>
                 </View>
+                <TouchableHighlight
+                  style={styles.detailsButton}
+                  onPress={() => navigateToDetails({id, name, address, image})}>
+                  <Text style={styles.detailsButtonText}>View Details</Text>
+                </TouchableHighlight>
               </View>
             ))}
           </ScrollView>
@@ -117,11 +128,16 @@ export default function OfficerList() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+  },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 16,
+    paddingTop: 20,
   },
   searchInput: {
     flex: 3, // Adjust the flex value to control the width
@@ -156,10 +172,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 2,
-    backgroundColor: '#0A79DF',
-    padding: 4,
-    borderRadius: 10,
   },
   userImage: {
     width: 60,
@@ -178,5 +190,26 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: 16,
     paddingBottom: 8,
+  },
+  detailsButton: {
+    backgroundColor: '#FFF',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 8,
+  },
+  detailsButtonText: {
+    color: '#000',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  listContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 2,
+    backgroundColor: '#0A79DF',
+    padding: 4,
+    borderRadius: 10,
   },
 });
