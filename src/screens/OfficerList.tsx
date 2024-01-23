@@ -12,8 +12,18 @@ import {
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import AddOfficerModal from './AddOfficerModal';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-export default function OfficerList() {
+// navigation
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../App';
+
+type OfficerListProps = NativeStackScreenProps<
+  RootStackParamList,
+  'OfficerList'
+>;
+
+export default function OfficerList({navigation}: OfficerListProps) {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -70,68 +80,76 @@ export default function OfficerList() {
     getOfficers();
   };
 
-  const navigateToDetails = officer => {
-    navigation.navigate('OfficerDetails', {officer});
-  };
-
   return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search officers..."
-          onChangeText={text => setSearchTerm(text)}
-        />
-        <TouchableHighlight
-          style={styles.addButton}
-          onPress={toggleAddOfficerModal}>
-          <Text style={styles.addButtonText}>+ Add</Text>
-        </TouchableHighlight>
-      </View>
-      <AddOfficerModal
-        isVisible={isAddOfficerModalVisible}
-        toggleModal={toggleAddOfficerModal}
-        onOfficerAdded={onOfficerAdded}
-      />
-      <AddOfficerModal
-        isVisible={isAddOfficerModalVisible}
-        toggleModal={toggleAddOfficerModal}
-        onOfficerAdded={onOfficerAdded}
-      />
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <View>
-          <Text style={styles.headingText}>Officer List</Text>
-          <ScrollView style={styles.container} scrollEnabled={false}>
-            {data.filter(filterOfficers).map(({id, name, address, image}) => (
-              <View key={id} style={styles.listContainer}>
-                <View style={styles.userCard}>
-                  {renderUserImage(image)}
-                  <View>
-                    <Text style={styles.userName}>{name}</Text>
-                    <Text style={styles.userStatus}>{address}</Text>
-                  </View>
-                </View>
-                <TouchableHighlight
-                  style={styles.detailsButton}
-                  onPress={() => navigateToDetails({id, name, address, image})}>
-                  <Text style={styles.detailsButtonText}>View Details</Text>
-                </TouchableHighlight>
-              </View>
-            ))}
-          </ScrollView>
+    <SafeAreaView>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search officers..."
+              onChangeText={text => setSearchTerm(text)}
+            />
+            <TouchableHighlight
+              style={styles.addButton}
+              onPress={toggleAddOfficerModal}>
+              <Text style={styles.addButtonText}>+ Add</Text>
+            </TouchableHighlight>
+          </View>
+          <AddOfficerModal
+            isVisible={isAddOfficerModalVisible}
+            toggleModal={toggleAddOfficerModal}
+            onOfficerAdded={onOfficerAdded}
+          />
+          <AddOfficerModal
+            isVisible={isAddOfficerModalVisible}
+            toggleModal={toggleAddOfficerModal}
+            onOfficerAdded={onOfficerAdded}
+          />
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <View>
+              {/* <Text style={styles.headingText}>Officer List</Text> */}
+              <ScrollView style={styles.container} scrollEnabled={false}>
+                {data
+                  .filter(filterOfficers)
+                  .map((officeer) => (
+                    <View key={officeer?.id} style={styles.listContainer}>
+                      <View style={styles.userCard}>
+                        {renderUserImage(officeer?.image)}
+                        <View>
+                          <Text style={styles.userName}>{officeer?.name}</Text>
+                          <Text style={styles.userStatus}>{officeer?.address}</Text>
+                        </View>
+                      </View>
+                      <TouchableHighlight
+                        style={styles.detailsButton}
+                        onPress={() =>
+                          navigation.navigate('OfficerDetails', {
+                            officerData: officeer,
+                          })
+                        }>
+                        <Text style={styles.detailsButtonText}>
+                          View Details
+                        </Text>
+                      </TouchableHighlight>
+                    </View>
+                  ))}
+              </ScrollView>
+            </View>
+          )}
         </View>
-      )}
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-  },
+  // container: {
+  //   flex: 1,
+  //   padding: 24,
+  // },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -167,6 +185,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     marginBottom: 6,
+    backgroundColor: '#0A3D62',
   },
   userCard: {
     flex: 1,
