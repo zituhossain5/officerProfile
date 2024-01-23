@@ -1,5 +1,4 @@
 import React from 'react';
-import type {PropsWithChildren} from 'react';
 
 //Navigation
 import {NavigationContainer} from '@react-navigation/native';
@@ -8,10 +7,12 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 //screens
 import OfficerList from './screens/OfficerList';
 import OfficerDetails from './screens/OfficerDetails';
+import AddOfficer from './screens/AddOfficer';
 
 export type RootStackParamList = {
   OfficerList: undefined;
-  OfficerDetails: {officerData: object};
+  OfficerDetails: {officerId: number};
+  AddOfficer: {officerData?: object};
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -32,6 +33,13 @@ function App(): JSX.Element {
           component={OfficerDetails}
           options={{
             title: 'Officer Details',
+          }}
+        />
+        <Stack.Screen
+          name="AddOfficer"
+          component={AddOfficer}
+          options={{
+            title: 'Add/Update Officer', // Updated title
           }}
         />
       </Stack.Navigator>

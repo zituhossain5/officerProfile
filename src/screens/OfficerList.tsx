@@ -11,12 +11,12 @@ import {
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
-import AddOfficerModal from './AddOfficerModal';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 // navigation
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
+import {useFocusEffect} from '@react-navigation/native';
 
 type OfficerListProps = NativeStackScreenProps<
   RootStackParamList,
@@ -27,7 +27,6 @@ export default function OfficerList({navigation}: OfficerListProps) {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddOfficerModalVisible, setAddOfficerModalVisible] = useState(false);
 
   const getOfficers = async () => {
     try {
@@ -48,9 +47,11 @@ export default function OfficerList({navigation}: OfficerListProps) {
     }
   };
 
-  useEffect(() => {
-    getOfficers();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      getOfficers();
+    }, []),
+  );
 
   const renderUserImage = image => {
     const defaultImageUrl =
@@ -71,15 +72,6 @@ export default function OfficerList({navigation}: OfficerListProps) {
     );
   };
 
-  const toggleAddOfficerModal = () => {
-    setAddOfficerModalVisible(!isAddOfficerModalVisible);
-  };
-
-  const onOfficerAdded = () => {
-    // Refresh officer list after adding a new officer
-    getOfficers();
-  };
-
   return (
     <SafeAreaView>
       <ScrollView>
@@ -92,20 +84,10 @@ export default function OfficerList({navigation}: OfficerListProps) {
             />
             <TouchableHighlight
               style={styles.addButton}
-              onPress={toggleAddOfficerModal}>
+              onPress={() => navigation.navigate('AddOfficer')}>
               <Text style={styles.addButtonText}>+ Add</Text>
             </TouchableHighlight>
           </View>
-          <AddOfficerModal
-            isVisible={isAddOfficerModalVisible}
-            toggleModal={toggleAddOfficerModal}
-            onOfficerAdded={onOfficerAdded}
-          />
-          <AddOfficerModal
-            isVisible={isAddOfficerModalVisible}
-            toggleModal={toggleAddOfficerModal}
-            onOfficerAdded={onOfficerAdded}
-          />
           {isLoading ? (
             <ActivityIndicator size="large" color="#0000ff" />
           ) : (
@@ -114,20 +96,20 @@ export default function OfficerList({navigation}: OfficerListProps) {
               <ScrollView style={styles.container} scrollEnabled={false}>
                 {data
                   .filter(filterOfficers)
-                  .map((officeer) => (
-                    <View key={officeer?.id} style={styles.listContainer}>
+                  .map(({id, image, name, address}) => (
+                    <View key={id} style={styles.listContainer}>
                       <View style={styles.userCard}>
-                        {renderUserImage(officeer?.image)}
+                        {renderUserImage(image)}
                         <View>
-                          <Text style={styles.userName}>{officeer?.name}</Text>
-                          <Text style={styles.userStatus}>{officeer?.address}</Text>
+                          <Text style={styles.userName}>{name}</Text>
+                          <Text style={styles.userStatus}>{address}</Text>
                         </View>
                       </View>
                       <TouchableHighlight
                         style={styles.detailsButton}
                         onPress={() =>
                           navigation.navigate('OfficerDetails', {
-                            officerData: officeer,
+                            officerId: id,
                           })
                         }>
                         <Text style={styles.detailsButtonText}>
