@@ -28,7 +28,7 @@ const OfficerDetails = ({route, navigation}: DetailsProps) => {
   const getOfficers = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.0.107:8080/officer/get_officer/${officerId}`,
+        `http://192.168.31.105:8080/officer/get_officer/${officerId}`,
       );
       const jsonResponse = response.data;
 

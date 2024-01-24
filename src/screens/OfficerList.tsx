@@ -31,7 +31,7 @@ export default function OfficerList({navigation}: OfficerListProps) {
   const getOfficers = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.0.107:8080/officer/all_officer',
+        'http://192.168.31.105:8080/officer/all_officer',
       );
       const jsonResponse = response.data;
 
