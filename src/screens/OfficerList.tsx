@@ -1,6 +1,8 @@
 /* eslint-disable prettier/prettier */
 import {
   ActivityIndicator,
+  Alert,
+  BackHandler,
   Image,
   ScrollView,
   StyleSheet,
@@ -17,6 +19,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
 import {useFocusEffect} from '@react-navigation/native';
+import { baseUrl } from '../config';
 
 type OfficerListProps = NativeStackScreenProps<
   RootStackParamList,
@@ -24,14 +27,14 @@ type OfficerListProps = NativeStackScreenProps<
 >;
 
 export default function OfficerList({navigation}: OfficerListProps) {
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   const getOfficers = async () => {
     try {
       const response = await axios.get(
-        'http://192.168.31.105:8080/officer/all_officer',
+        `${baseUrl}/officer/all_officer`,
       );
       const jsonResponse = response.data;
 
@@ -46,6 +49,30 @@ export default function OfficerList({navigation}: OfficerListProps) {
       setLoading(false);
     }
   };
+
+  const handleBackPress = ()=> {
+    Alert.alert('Exit App', 'Are you sure you want to exit?', [
+      {
+        text: 'Cancel',
+        onPress: ()=>null,
+        style: 'cancel',
+      },
+      {
+        text: 'Exit',
+        onPress: ()=> BackHandler.exitApp(),
+      },
+    ]);
+    return true;
+  };
+
+  useFocusEffect(
+    React.useCallback(()=>{
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    return ()=> {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+    }, [])
+  );
 
   useFocusEffect(
     React.useCallback(() => {

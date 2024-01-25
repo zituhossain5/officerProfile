@@ -1,8 +1,10 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { baseUrl } from '../config';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -12,11 +14,27 @@ const LoginScreen = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+
+  const checkLoginStatus = async ()=> {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        navigation.navigate('OfficerList');
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error.message);
+    }
+  };
+
   const handleLogin = async () => {
     try {
       setLoading(true); // Set loading to true when login request starts
 
-      const response = await axios.post('http://192.168.31.105:8080/auth/login', {
+      const response = await axios.post(`${baseUrl}/auth/login`, {
         username: username,
         password1: password1,
         password2: password2,
@@ -24,12 +42,15 @@ const LoginScreen = () => {
 
       const data = response.data;
 
+      console.log('data==', data.token);
+
       if (response.status === 200) {
         if (data.error === false) {
           setStep(2);
           Alert.alert('Info', 'Enter the second password.');
         } else if (data.success === true) {
-          // Alert.alert('Success', 'Login successful.');
+          Alert.alert('Success', 'Login successful.');
+          AsyncStorage.setItem('token', data.token);
           navigation.navigate('OfficerList');
         }
       } else {
@@ -81,6 +102,7 @@ const LoginScreen = () => {
     </KeyboardAvoidingView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

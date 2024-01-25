@@ -3,12 +3,19 @@
 import React from 'react';
 import {View, Text, Button, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = () => {
   const navigation = useNavigation();
 
-  const handleLogout = () => {
-    navigation.navigate('Login');
+  const handleLogout = async() => {
+    try {
+      await AsyncStorage.removeItem('token');
+      navigation.navigate('Login');
+      console.warn('logout successfully')
+    } catch (error) {
+      console.error('Error during logout:', error.message);
+    }
   };
 
   return (

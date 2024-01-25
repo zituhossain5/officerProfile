@@ -13,6 +13,7 @@ import axios from 'axios';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
 import { Picker } from '@react-native-picker/picker';
+import { baseUrl } from '../config';
 
 type AddOfficerProps = NativeStackScreenProps<RootStackParamList, 'AddOfficer'>;
 
@@ -55,7 +56,7 @@ const AddOfficer = ({route, navigation}: AddOfficerProps) => {
       if (officerData) {
         // Update operation
         await axios.post(
-          `http://192.168.31.105:8080/officer/update_officer/${officerData.id}`,
+          `${baseUrl}/officer/update_officer/${officerData.id}`,
           {
             name,
             father_name: fatherName,
@@ -73,7 +74,7 @@ const AddOfficer = ({route, navigation}: AddOfficerProps) => {
         );
       } else {
         // Create operation
-        await axios.post('http://192.168.31.105:8080/officer/create_officer', {
+        await axios.post(`${baseUrl}/officer/create_officer`, {
           name,
           father_name: fatherName,
           address,

@@ -7,6 +7,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../App';
 import axios from 'axios';
 import {useFocusEffect} from '@react-navigation/native';
+import { baseUrl } from '../config';
 
 type DetailsProps = NativeStackScreenProps<
   RootStackParamList,
@@ -28,7 +29,7 @@ const OfficerDetails = ({route, navigation}: DetailsProps) => {
   const getOfficers = async () => {
     try {
       const response = await axios.get(
-        `http://192.168.31.105:8080/officer/get_officer/${officerId}`,
+        `${baseUrl}/officer/get_officer/${officerId}`,
       );
       const jsonResponse = response.data;
 

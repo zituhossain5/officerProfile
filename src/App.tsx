@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+/* eslint-disable prettier/prettier */
+import React, {useMemo} from 'react';
 
 //Navigation
 import {NavigationContainer} from '@react-navigation/native';
